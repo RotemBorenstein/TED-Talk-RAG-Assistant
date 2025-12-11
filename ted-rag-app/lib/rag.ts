@@ -101,7 +101,6 @@ INSTRUCTIONS:
 
 export async function runRag(question: string): Promise<RagResult> {
   const context = await retrieveContext(question);
-  console.log("RETRIEVED CONTEXT:", context); // <--- הוסף את זה
   const userPrompt = buildUserPrompt(question, context);
 
   const chatRes = await openai.chat.completions.create({
