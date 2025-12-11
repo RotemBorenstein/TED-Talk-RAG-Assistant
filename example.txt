@@ -1,0 +1,17 @@
+PS C:\Users\rotem\OneDrive\technion\Semester_7\Agent_Project\Individual_assignment> Invoke-RestMethod -Uri http://localhost:3000/api/prompt -Method Post -ContentType 'application/json' -Body '{"question": "Which TED talk focuses on education or learning? Return a list of exactly 3 talk titles."}'
+
+response                                                                                       
+itles."}' | Out-File -FilePath "prompt_result.json" -Encoding utf8
+PS C:\Users\rotem\OneDrive\technion\Semester_7\Agent_Project\Individual_assignment> (Invoke-RestMethod -Uri http://localhost:3000/api/prompt -Method Post -ContentType 'application/json' -Body '{"question": "Which TED talk focuses on education or learning? Return a list of exactly 3 talk titles."}').response
+- The birth of the open-source learning revolution
+- Do schools kill creativity?
+- One Laptop per Child
+
+Explanation (from the provided TED data):
+- "The birth of the open-source learning revolution" (Richard Baraniuk) is explicitly about text
+books, educational materials and creating a "knowledge ecosystem" for learning â e.g., the trans
+cript describes imagining "take all the world's books... digitizing them... make it all open... put people into this" and mentions the Connexions project (Chunk 5).
+- "Do schools kill creativity?" (Sir Ken Robinson) directly addresses the purpose and structure 
+of public education, arguing we must "rethink the fundamental principles on which we're educating our children" and to "educate their whole being" (Chunks 3 and 6).
+- "One Laptop per Child" (Nicholas Negroponte) focuses on education and learning technology â th
+e talk is framed around why education matters and how laptops/computers change learning to be "driven by the learner himself or herself" (Chunk 4).
