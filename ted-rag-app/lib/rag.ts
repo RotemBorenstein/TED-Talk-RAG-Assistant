@@ -12,7 +12,7 @@ const pinecone = new Pinecone({
 
 const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME!;
 const PINECONE_NAMESPACE = process.env.PINECONE_NAMESPACE || "ted-talks";
-const TOP_K = Number(process.env.RAG_TOP_K || 6);
+const TOP_K = Number(process.env.RAG_TOP_K || 10);
 
 // Keep this aligned with the assignment instructions.
 const TED_SYSTEM_PROMPT = `
@@ -27,12 +27,19 @@ export type RetrievedChunk = {
   chunk: string;
   score: number;
 };
-
+export type ApiContextChunk = {
+  talk_id: string;   // keep as string to match the spec examples
+  title: string;
+  chunk: string;
+  score: number;
+};
 export type RagResult = {
   response: string;
-  context: RetrievedChunk[];
-  augmentedSystem: string;
-  augmentedUser: string;
+  context: ApiContextChunk[];
+  Augmented_prompt: {
+    System: string;
+    User: string;
+  };
 };
 
 async function embedQuestion(question: string): Promise<number[]> {
@@ -99,9 +106,29 @@ INSTRUCTIONS:
 `.trim();
 }
 
+function toApiContext(context: RetrievedChunk[]): ApiContextChunk[] {
+  return context.map((c) => ({
+    talk_id: String(c.talk_id ?? ""),
+    title: c.title ?? "",
+    chunk: c.chunk ?? "",
+    score: typeof c.score === "number" ? c.score : 0,
+  }));
+}
+
 export async function runRag(question: string): Promise<RagResult> {
   const context = await retrieveContext(question);
   const userPrompt = buildUserPrompt(question, context);
+
+    if (!context || context.length === 0) {
+    return {
+      response: 'I don’t know based on the provided TED data.',
+      context: [],
+      Augmented_prompt: {
+        System: TED_SYSTEM_PROMPT,
+        User: userPrompt,
+      },
+    };
+  }
 
   const chatRes = await openai.chat.completions.create({
     model: "RPRTHPB-gpt-5-mini",
@@ -117,8 +144,10 @@ export async function runRag(question: string): Promise<RagResult> {
 
   return {
     response: answer,
-    context,
-    augmentedSystem: TED_SYSTEM_PROMPT,
-    augmentedUser: userPrompt,
+    context: toApiContext(context),
+    Augmented_prompt: {
+      System: TED_SYSTEM_PROMPT,
+      User: userPrompt,
+    },
   };
 }

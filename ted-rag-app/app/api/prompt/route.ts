@@ -19,15 +19,15 @@ export async function POST(req: NextRequest) {
       context: result.context.map((c) => ({
         talk_id: String(c.talk_id),
         title: c.title,
-        speaker: c.speaker,
-        topics: c.topics,
+        //speaker: c.speaker,
+        //topics: c.topics,
         chunk: c.chunk,
         score: c.score,
       })),
-      Augmented_prompt: {
-        System: result.augmentedSystem,
-        User: result.augmentedUser,
-      },
+        Augmented_prompt: {
+          System: result.Augmented_prompt.System,
+          User: result.Augmented_prompt.User,
+        },
     });
   } catch (err: any) {
     console.error("Error in /api/prompt:", err);
